@@ -1,35 +1,25 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import path from 'path';
-import connectDB from './config/db.js';
-import productRoutes from './routes/productRoutes.js';
-
+import dotenv from 'dotenv';
 dotenv.config();
 
-// MongoDB Database connect panrom
-connectDB();
-
 const app = express();
-
-app.use(express.json());
-
-// API Routes
-app.use('/api/products', productRoutes);
-
-// --- Static Folder Deployment Logic (IMPORTANT) ---
 const __dirname = path.resolve();
 
-// Frontend-la "npm run build" panna vandha 'dist' folder-ah serve panrom
+// Static files (Images/Frontend)
 app.use(express.static(path.join(__dirname, '/frontend/dist')));
 
-// API routes-ah thavira matha entha URL vandhalum 'index.html'-ah load pannu
-app.get('*', (req, res) =>
+// API Routes (Unga palaiya routes inga irukkum)
+app.get('/api/products', (req, res) => {
+  res.send('API is running...');
+});
+
+// FIX: '*' badhula '(.*)' kuduthurukaen - Idhu dhaan crash-ah thadukkum
+app.get('(.*)', (req, res) =>
   res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'))
 );
-// --------------------------------------------------
 
-const PORT = process.env.PORT || 5000;
-
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server running in production mode on port ${PORT}`);
+  console.log(`Server started on port ${PORT}`);
 });
